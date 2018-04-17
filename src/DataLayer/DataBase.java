@@ -4,6 +4,7 @@ import java.sql.*;
 public class DataBase {
 
     private String dbPath="jdbc:sqlite:sqlite/db/";
+    public void DataBase(){}
 
     public void createNewDatabase(String fileName) {
 
@@ -127,67 +128,6 @@ public class DataBase {
             return e.getMessage();
         }
         return "The employee was successfully inserted";
-    }
-
-    public void main(String[] args)
-    {
-        createNewDatabase("Ass0");
-        createTable(); //if not exists
-        if(args.length <1) {
-            System.out.println("No command has been entered");
-            return;
-        }
-        switch (args[0])
-        {
-            case "insert":
-            {
-                try {
-                    int id = Integer.parseInt(args[1]);
-                    String fn=args[2];
-                    String ln=args[3];
-                    int salary = Integer.parseInt(args[4]);
-                    if(args.length<6){
-                        System.out.println(insert(id, fn, ln, salary,null));
-
-                    }else System.out.println(insert(id, fn, ln, salary, java.sql.Date.valueOf(args[5])));
-                }
-                catch(Exception e){System.out.println(e.getMessage());}
-
-                break;
-            }
-            case "update":
-            {
-                try {
-                    //update date goes like this 2017-06-15
-                    int id = Integer.parseInt(args[1]);
-                    String fn=args[2];
-                    String ln=args[3];
-                    int salary = Integer.parseInt(args[4]);
-                    System.out.println(update(id, fn, ln, salary, java.sql.Date.valueOf(args[5])));
-                }
-                catch(Exception e){System.out.println(e.getMessage());}
-
-                break;
-            }
-            case "info":
-            {
-                try {
-                    //update date goes like this 2017-06-15
-                    int id = Integer.parseInt(args[1]);
-                    get(id);
-                }
-                catch(Exception e){System.out.println(e.getMessage());}
-
-                break;
-            }
-            default:
-            {
-                System.out.println("Command Invalid: " + args[0]);
-                break;
-            }
-
-        }
-
     }
 
 }
