@@ -30,8 +30,9 @@ public class DataBase {
                 + "	first_name VARCHAR(100) NOT NULL,\n"
                 + "	last_name VARCHAR (100) NOT NULL,\n"
                 + " bank_account INTEGER, NOT NULL\n "
-                + " working_conditions TEXT, NOT NULL \n"
+                + " working_conditions TEXT,\n"
                 + "	salary INTEGER, \n"
+                + " start_date DATE \n"
                 + ");";
 
         String roles = "CREATE TABLE IF NOT EXISTS Roles (\n"
@@ -39,7 +40,7 @@ public class DataBase {
                 + "	role VARCHAR(100) NOT NULL,\n"
                 + ");";
 
-        String availability = "CREATE TABLE IF NOT EXISTS Availabilty (\n"
+        String constraints = "CREATE TABLE IF NOT EXISTS Constraints (\n"
                 + "	id integer PRIMARY KEY,\n"
                 + "	day_of_week DAY PRIMARY KEY \n"
                 + "	start_time TIME PRIMARY  KEY\n"
@@ -59,7 +60,7 @@ public class DataBase {
             // create a new table
             stmt.execute(workers);
             stmt.execute(roles);
-            stmt.execute(availability);
+            stmt.execute(constraints);
             stmt.execute(shifts);
 
         } catch (SQLException e) {
@@ -67,7 +68,7 @@ public class DataBase {
         }
     }
 
-    private Connection connect() {
+    public Connection connect() {
         // SQLite connection string
         String url = dbPath;
         Connection conn = null;
@@ -79,81 +80,7 @@ public class DataBase {
         return conn;
     }
 
-    public String update(int id, String name, String last_name, int salary , java.sql.Date date) {
-        String sql = "UPDATE Workers SET first_name = ? , "
-                + "last_name = ? , salary = ? , leave_date = ?"
-                + "WHERE id = ?";
 
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            // set the corresponding param
-            pstmt.setString(1, name);
-            pstmt.setString(2, last_name);
-            pstmt.setInt(3, salary);
-            pstmt.setDate(4, date);
-            pstmt.setInt(5, id);
-            // update
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            return e.getMessage();
-        }
-
-        return "Employee was successfully updated";
-    }
-
-    public void get(int id) {
-        String sql = "SELECT * from Workers "
-                + "WHERE id = ?";
-
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            // set the c¡orresponding param
-            pstmt.setInt(1, id);
-            // update
-            ResultSet rs =pstmt.executeQuery();
-
-            if(!rs.isBeforeFirst()){
-                System.out.println("employee doesn't exist");
-                return;
-            }
-            while(rs.next())
-            {
-                System.out.println(rs.getInt("id") +  "\t" +
-                        rs.getString("first_name") + "\t" +
-                        rs.getString("last_name") + "\t" +
-                        rs.getString("salary") + "\t" +
-                        rs.getDate("leave_date"));
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-    }
-
-    public String insert(int id, String name, String last_name, int salary, java.sql.Date date) {
-        // set the corresponding param
-
-        String sql = "INSERT INTO Workers (id, first_name , last_name , salary , leave_date) "
-                + "VALUES ( ? ,? , ? ,?, ?)";
-
-        try (Connection conn = connect();
-
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            // set the corresponding param
-            pstmt.setInt(1, id);
-            pstmt.setString(2, name);
-            pstmt.setString(3, last_name);
-            pstmt.setInt(4, salary);
-            pstmt.setDate(5,date);
-            // update
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            return e.getMessage();
-        }
-        return "The employee was successfully inserted";
-    }
 
 }
 
