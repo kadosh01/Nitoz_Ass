@@ -10,7 +10,6 @@ import java.sql.SQLException;
 public class systemLogic {
     private DataBase db;
     public void systemLogic(){
-        db=new DataBase();
     }
 
     public String insertNewEmployee(int id, String name, String last_name,int bank, int salary , java.sql.Date date,String conditions) {

@@ -9,19 +9,19 @@ import java.sql.*;
 public class main {
 
     public static void main(String[] args) {
-        DataBase db = new DataBase();
+        DataBase db = new DataBase("WORKERS_MODULE");
         systemLogic sl = new systemLogic();
-        db.createNewDatabase("WORKERS_MODULE");
+        db.createNewDatabase();
         db.createTables(); //if not exists
 
 
+        printMainMenu();
         Scanner scanner = new Scanner(System.in);
         String inputString = scanner.nextLine();
         inputString.trim();
-        printMainMenu();
 
 
-        Main_Menu:
+
         while (inputString != "0") {
             printMainMenu();
             switch (inputString) {
@@ -34,13 +34,15 @@ public class main {
                     System.out.println("Insert Last Name, then press Enter");
                     String last_name = scanner.nextLine().trim();
                     System.out.println("Insert Bank Account, then press Enter");
-                    Integer BankAccount = Integer.parseInt(scanner.nextLine().trim());
+                    int BankAccount = Integer.parseInt(scanner.nextLine().trim());
                     System.out.println("Insert Working Conditions, then press Enter");
                     String working_Conditions = scanner.nextLine();
+                    System.out.println("Insert Working start date, then press Enter");
+                    java.sql.Date date = java.sql.Date.valueOf(scanner.nextLine());
                     System.out.println("Insert Employee Role, then press Enter");
                     String role = scanner.nextLine().trim();
 
-
+                    sl.insertNewEmployee(id,first_name,last_name,BankAccount,0,date,working_Conditions);
 
                     break;
                 }
@@ -114,7 +116,7 @@ public class main {
                         }
                         default :
                             System.out.println("Invalid Number, Please Try Again");
-                            goTo
+
                         {
 
                             break;
@@ -128,7 +130,7 @@ public class main {
                     try {
                         //update date goes like this 2017-06-15
                         int id = Integer.parseInt(args[1]);
-                        db.get(id);
+                        sl.getEmployeeInfo(id);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -140,7 +142,7 @@ public class main {
                     try {
                         //update date goes like this 2017-06-15
                         int id = Integer.parseInt(args[1]);
-                        db.get(id);
+                        //db.get(id);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -152,7 +154,7 @@ public class main {
                     try {
                         //update date goes like this 2017-06-15
                         int id = Integer.parseInt(args[1]);
-                        db.get(id);
+                        //db.get(id);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -164,7 +166,7 @@ public class main {
                     try {
                         //update date goes like this 2017-06-15
                         int id = Integer.parseInt(args[1]);
-                        db.get(id);
+                       // db.get(id);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -176,7 +178,7 @@ public class main {
                     try {
                         //update date goes like this 2017-06-15
                         int id = Integer.parseInt(args[1]);
-                        db.get(id);
+                        //db.get(id);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
