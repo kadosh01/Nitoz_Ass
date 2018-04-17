@@ -39,7 +39,7 @@ public class DataBase {
                 + "	role VARCHAR(100) NOT NULL,\n"
                 + ");";
 
-        String availability = "CREATE TABLE IF NOT EXISTS Availabilty (\n"
+        String shhift_constraints = "CREATE TABLE IF NOT EXISTS Constraints (\n"
                 + "	id integer PRIMARY KEY,\n"
                 + "	day_of_week DAY PRIMARY KEY \n"
                 + "	start_time TIME PRIMARY  KEY\n"
