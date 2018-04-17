@@ -8,7 +8,7 @@ public class main {
     {
         DataBase db=new DataBase();
 
-        db.createNewDatabase("ASS1");
+        db.createNewDatabase("WORKERS_MODULE");
         db.createTable(); //if not exists
         if(args.length <1) {
             System.out.println("No command has been entered");

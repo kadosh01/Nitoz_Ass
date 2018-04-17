@@ -20,23 +20,48 @@ public class DataBase {
         }
     }
 
-    public void createTable()
+    public void createTables()
     {
         String url=dbPath;
 
         // SQL statement for creating a new table
-        String sql = "CREATE TABLE IF NOT EXISTS Workers (\n"
+        String workers = "CREATE TABLE IF NOT EXISTS Workers (\n"
                 + "	id integer PRIMARY KEY,\n"
                 + "	first_name VARCHAR(100) NOT NULL,\n"
                 + "	last_name VARCHAR (100) NOT NULL,\n"
+                + " bank_account INTEGER, NOT NULL\n "
+                + " working_conditions TEXT, NOT NULL \n"
                 + "	salary INTEGER, \n"
-                + "	leave_date DATE DEFAULT(NULL)\n"
                 + ");";
+
+        String roles = "CREATE TABLE IF NOT EXISTS Roles (\n"
+                + "	id integer PRIMARY KEY,\n"
+                + "	role VARCHAR(100) NOT NULL,\n"
+                + ");";
+
+        String availability = "CREATE TABLE IF NOT EXISTS Availabilty (\n"
+                + "	id integer PRIMARY KEY,\n"
+                + "	day_of_week DAY PRIMARY KEY \n"
+                + "	start_time TIME PRIMARY  KEY\n"
+                + "	end_time TIME NOT NULL,\n"
+                + ");";
+
+        String shifts = "CREATE TABLE IF NOT EXISTS Shifts (\n"
+                + "	shift_date DATE PRIMARY  KEY \n"
+                + "	shift_of_day INTEGER PRIMARY  KEY,\n"
+                + "	shift_worker INTEGER PRIMARY KEY,\n"
+                + ");";
+
+
 
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement()) {
             // create a new table
-            stmt.execute(sql);
+            stmt.execute(workers);
+            stmt.execute(roles);
+            stmt.execute(availability);
+            stmt.execute(shifts);
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
