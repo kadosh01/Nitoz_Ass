@@ -95,11 +95,11 @@ public class DataBase {
             }
             while(rs.next())
             {
-                System.out.println(rs.getInt("id") +  "\t" +
-                        rs.getString("first_name") + "\t" +
-                        rs.getString("last_name") + "\t" +
-                        rs.getString("salary") + "\t" +
-                        rs.getDate("leave_date"));
+                System.out.println("ID:" + rs.getInt("id") +  "\t" +
+                        "First Name: " + rs.getString("first_name") + "\t" +
+                        "Last Name: " + rs.getString("last_name") + "\t" +
+                        "Salary: " + rs.getString("salary") + "\t" +
+                        "Leave Date: " + rs.getDate("leave_date"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
