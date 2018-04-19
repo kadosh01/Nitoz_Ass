@@ -38,7 +38,6 @@ public class DataBase {
                 + "	last_name VARCHAR (100) NOT NULL,\n"
                 + " bank_account INTEGER NOT NULL,\n "
                 + " working_conditions TEXT,\n"
-                + "	salary INTEGER, \n"
                 + " start_date DATE \n"
                 + ");";
 
@@ -50,7 +49,7 @@ public class DataBase {
         String constraints = "CREATE TABLE IF NOT EXISTS Constraints (\n"
                 + "	id integer ,\n"
                 + "	day_of_week DAY , \n"
-                + "	start_time TIME ,\n"
+                + "	start_time TIME NOT NULL ,\n"
                 + "	end_time TIME NOT NULL,\n"
                 + "PRIMARY KEY (id, day_of_week)"
                 + ");";
@@ -62,6 +61,11 @@ public class DataBase {
                 + "PRIMARY KEY (shift_date , shift_of_day , shift_worker)"
                 + ");";
 
+        String requirements = "CREATE TABLE IF NOT EXISTS Requirements (\n"
+                + "	shift_date DATE , \n"
+                + "	shift_of_day INTEGER ,\n"
+                + "	shift_requirement VARCHAR(100) NOT NULL\n"
+                + ");";
 
 
         try (Connection conn = DriverManager.getConnection(url);
@@ -71,6 +75,7 @@ public class DataBase {
             stmt.execute(roles);
             stmt.execute(constraints);
             stmt.execute(shifts);
+            stmt.execute(requirements);
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());

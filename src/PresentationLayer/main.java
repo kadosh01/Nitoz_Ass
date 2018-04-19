@@ -2,52 +2,73 @@ package PresentationLayer;
 import DataLayer.DataBase;
 import LogicLayer.systemLogic;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Scanner;
 import java.lang.String;
 import java.sql.*;
 
 public class main {
 
-    public static void main(String[] args) {
-        DataBase db = new DataBase("WORKERS_MODULE");
+
+
+    public static void main(String[] args) throws ParseException {
+        //DataBase db = new DataBase("WORKERS_MODULE");
         systemLogic sl = new systemLogic();
-        db.createNewDatabase();
-        db.createTables(); //if not exists
+        //db.createNewDatabase();
+        //db.createTables(); //if not exists
 
 
-        printMainMenu();
+       // printMainMenu();
         Scanner scanner = new Scanner(System.in);
-        String inputString = scanner.nextLine();
-        inputString.trim();
+        String inputString = "1";
+        //inputString.trim();
 
 
 
         while (inputString != "0") {
             printMainMenu();
+            inputString = scanner.nextLine();
             switch (inputString) {
                 case "1": //Insert New Employee
-                {
+                {   int BankAccount;
+                    int id;
+                    java.sql.Date date;
                     System.out.println("Insert Employee ID, then press Enter");
-                    Integer id = Integer.parseInt(scanner.nextLine().trim());
+                    try {id = Integer.parseInt(scanner.nextLine().trim());}
+                    catch(NumberFormatException e){System.out.println("Error ID must be Numbers Only"); break;}
                     System.out.println("Insert First Name, then press Enter");
                     String first_name = scanner.nextLine().trim();
                     System.out.println("Insert Last Name, then press Enter");
                     String last_name = scanner.nextLine().trim();
                     System.out.println("Insert Bank Account, then press Enter");
-                    int BankAccount = Integer.parseInt(scanner.nextLine().trim());
+                    try {BankAccount = Integer.parseInt(scanner.nextLine().trim());}
+                    catch(NumberFormatException e){System.out.println("Error Bank Account must be Numbers Only"); break;}
                     System.out.println("Insert Working Conditions, then press Enter");
                     String working_Conditions = scanner.nextLine();
-                    System.out.println("Insert Working start date, then press Enter");
-                    java.sql.Date date = java.sql.Date.valueOf(scanner.nextLine());
+                    System.out.println("Insert Working start date (yyyy-MM-dd), then press Enter");
+                    try {date = java.sql.Date.valueOf(scanner.nextLine());}
+                    catch(Exception e){System.out.println("Invalid Date or Format"); break; }
                     System.out.println("Insert Employee Role, then press Enter");
                     String role = scanner.nextLine().trim();
 
-                    sl.insertNewEmployee(id,first_name,last_name,BankAccount,0,date,working_Conditions);
+                    sl.insertEmployeeRole(id,role);
+                    System.out.println(sl.insertNewEmployee(id,first_name,last_name,BankAccount,date,working_Conditions));
 
                     break;
                 }
-                case "2": { //update Worker
-                    Update_Worker:
+                case "2": { //update Worker1
+                    int id;
+                    System.out.println("Insert Employee ID, then press Enter");
+                    try { id = Integer.parseInt(scanner.nextLine().trim());}
+                    catch(NumberFormatException e){System.out.println("Error ID must be Numbers Only"); break;}
+                    if(!sl.checkIfIdExists(id)){
+                        System.out.println("Employee Id not in System");
+                        break;
+                        }
                     printUpdateMenu();
                     String updateNum = scanner.nextLine().trim();
                     switch (updateNum){
@@ -56,58 +77,92 @@ public class main {
                             String first_name = scanner.nextLine().trim();
                             System.out.println("Insert New Last Name, then press Enter");
                             String last_name = scanner.nextLine().trim();
+                            System.out.println(sl.updateEmployeeName(id,first_name,last_name));
                             break;
                         }
                         case "2" : //bank account
                         {
+                            int BankAccount;
                             System.out.println("Insert New Bank Account, then press Enter");
-                            Integer BankAccount = Integer.parseInt(scanner.nextLine().trim());
+                            try {BankAccount = Integer.parseInt(scanner.nextLine().trim());}
+                            catch(NumberFormatException e){System.out.println("Error Bank Account must be Numbers Only"); break;}
+                            System.out.println(sl.updateEmployeeBank(id,BankAccount));
                             break;
                         }
                         case "3" : //role
                         {
                             System.out.println("Insert New Employee Role, then press Enter");
                             String role = scanner.nextLine().trim();
+                            System.out.println(sl.updateEmployeeRole(id,role));
                             break;
                         }
                         case "4" : //working conditions
                         {
-                            System.out.println("Insert Employee Role, then press Enter");
-                            String role = scanner.nextLine().trim();
+                            System.out.println("Insert New Employee Working Conditions, then press Enter");
+                            String working_conditions = scanner.nextLine().trim();
+                            System.out.println(sl.updateWorkingConditions(id,working_conditions));
                             break;
                         }
                         case "5" : //add constraint
                         {
-                            System.out.println("Insert Employee ID, then press Enter");
-                            Integer id = Integer.parseInt(scanner.nextLine().trim());
                             System.out.println("Enter Day of Constraint, then press Enter");
                             String day = scanner.nextLine().trim();
-                            System.out.println("Enter Starting Hour of Constraint, then press Enter");
-                            String start_hour = scanner.nextLine().trim();
-                            System.out.println("Enter Finish Hour of Constraint, then press Enter");
-                            String end_hour = scanner.nextLine().trim();
+                            if(!isLegalDay(day))
+                            {
+                                System.out.println("Invalid day");
+                                break;
+                            }
+                            java.sql.Time start_hour;
+                            java.sql.Time end_hour;
+                            try {
+                                System.out.println("Enter Starting Hour of Constraint (HH:MM), then press Enter");
+                                start_hour = java.sql.Time.valueOf(scanner.nextLine().trim() + ":00");
+                                System.out.println("Enter Finish Hour of Constraint (HH:MM) , then press Enter");
+                                end_hour = java.sql.Time.valueOf(scanner.nextLine().trim() + ":00");
+                            }
+                            catch (IllegalArgumentException e) {
+                                System.out.println("Error: Invalid Hour Format");
+                                break;
+                            }
+                            System.out.println(sl.insertNewConstraints(id,day,start_hour,end_hour));
                             break;
                         }
 
                         case "6" : //update constraint
                         {
-                            System.out.println("Insert Employee ID, then press Enter");
-                            Integer id = Integer.parseInt(scanner.nextLine().trim());
-                            System.out.println("Enter Day of Constraint, then press Enter");
+                            System.out.println("Enter Day of Constraint to Change, then press Enter");
                             String day = scanner.nextLine().trim();
-                            System.out.println("Enter Starting Hour of Constraint, then press Enter");
-                            String start_hour = scanner.nextLine().trim();
-                            System.out.println("Enter Finish Hour of Constraint, then press Enter");
-                            String end_hour = scanner.nextLine().trim();
+                            if(!isLegalDay(day))
+                            {
+                                System.out.println("Invalid day");
+                                break;
+                            }
+                            java.sql.Time start_hour;
+                            java.sql.Time end_hour;
+                            try {
+                                System.out.println("Enter New Starting Hour of Constraint (HH:MM), then press Enter");
+                                start_hour = java.sql.Time.valueOf(scanner.nextLine().trim() + ":00");
+                                System.out.println("Enter New Finish Hour of Constraint (HH:MM) , then press Enter");
+                                end_hour = java.sql.Time.valueOf(scanner.nextLine().trim() + ":00");
+                            }
+                            catch (IllegalArgumentException e) {
+                                System.out.println("Error: Invalid Hour Format");
+                                break;
+                            }
+                            System.out.println(sl.updateConstraints(id,day,start_hour,end_hour));
                             break;
                         }
 
                         case "7" : //delete constraint
                         {
-                            System.out.println("Insert Employee ID, then press Enter");
-                            Integer id = Integer.parseInt(scanner.nextLine().trim());
                             System.out.println("Enter Day of Constraint, then press Enter");
                             String day = scanner.nextLine().trim();
+                            if(!isLegalDay(day))
+                            {
+                                System.out.println("Invalid day");
+                                break;
+                            }
+                            System.out.println(sl.deleteConstraints(id,day));
                             break;
                         }
                         case "0" : //back
@@ -127,66 +182,101 @@ public class main {
                     break;
                 }
                 case "3": { ////// Get Worker Info
-                    try {
-                        //update date goes like this 2017-06-15
-                        int id = Integer.parseInt(args[1]);
-                        sl.getEmployeeInfo(id);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                    int id;
+                    System.out.println("Insert Employee ID, then press Enter");
+                    try { id = Integer.parseInt(scanner.nextLine().trim());}
+                    catch(NumberFormatException e){System.out.println("Error ID must be Numbers Only"); break;}
+                    if(!sl.checkIfIdExists(id)){
+                        System.out.println("Employee Id not in System");
+                        break;
                     }
-
+                    sl.getEmployeeInfo(id);
                     break;
                 }
 
                 case "4": { ////// Get Worker Hour Constraints
-                    try {
-                        //update date goes like this 2017-06-15
-                        int id = Integer.parseInt(args[1]);
-                        //db.get(id);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                    int id;
+                    System.out.println("Insert Employee ID, then press Enter");
+                    try { id = Integer.parseInt(scanner.nextLine().trim());}
+                    catch(NumberFormatException e){System.out.println("Error ID must be Numbers Only"); break;}
+                    if(!sl.checkIfIdExists(id)){
+                        System.out.println("Employee Id not in System");
+                        break;
                     }
+                    sl.getEmployeeConstraints(id);
 
                     break;
                 }
 
                 case "5": { ////// Get Shift Schedule
-                    try {
-                        //update date goes like this 2017-06-15
-                        int id = Integer.parseInt(args[1]);
-                        //db.get(id);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-
+                    sl.getWeekSchedule();
                     break;
                 }
 
-                case "6": { ////// Update Shift Requirements
-                    try {
-                        //update date goes like this 2017-06-15
-                        int id = Integer.parseInt(args[1]);
-                       // db.get(id);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
 
+
+                case "6": { ////// Update Shift Requirements
+                    java.sql.Date date;
+                    int shift_number;
+                    System.out.println("Insert Shift date (yyyy-MM-dd), then press Enter");
+                    try {date = java.sql.Date.valueOf(scanner.nextLine());}
+                    catch(Exception e){System.out.println("Invalid Date or Format"); break; }
+                    System.out.println("Insert Shift Number 1 or 2, then press Enter");
+                    String shift = scanner.nextLine().trim();
+                    if (!shift.equals("1") && !shift.equals("2")) {
+                        System.out.println("Invalid Shift");
+                        break;
+                    }
+                    shift_number = Integer.parseInt(shift);
+                    System.out.println("Insert New Requirement, then press Enter");
+                    String req = scanner.nextLine().trim();
+                    System.out.println(sl.insertShiftRequirement(date,shift_number,req));
                     break;
                 }
 
                 case "7": { ////// Get Shift History
-                    try {
-                        //update date goes like this 2017-06-15
-                        int id = Integer.parseInt(args[1]);
-                        //db.get(id);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                    java.sql.Date date;
+                    int shift_number;
+                    System.out.println("Insert Shift date (yyyy-MM-dd), then press Enter");
+                    try {date = java.sql.Date.valueOf(scanner.nextLine());}
+                    catch(Exception e){System.out.println("Invalid Date or Format"); break; }
+                    System.out.println("Insert Shift Number 1 or 2, then press Enter");
+                    String shift = scanner.nextLine().trim();
+                    if (!shift.equals("1") && !shift.equals("2")) {
+                        System.out.println("Invalid Shift");
+                        break;
                     }
-
+                    shift_number = Integer.parseInt(shift);
+                    sl.getShiftSchedule(date,shift_number);
                     break;
                 }
+
+                case "8": { //////Insert Employee to shift
+                    int id;
+                    java.sql.Date date;
+                    int shift_number;
+                    System.out.println("Insert Employee ID, then press Enter");
+                    try { id = Integer.parseInt(scanner.nextLine().trim());}
+                    catch(NumberFormatException e){System.out.println("Error ID must be Numbers Only"); break;}
+                    if(!sl.checkIfIdExists(id)){
+                        System.out.println("Employee Id not in System");
+                        break;
+                    }
+                    System.out.println("Insert Shift date (yyyy-MM-dd), then press Enter");
+                    try {date = java.sql.Date.valueOf(scanner.nextLine());}
+                    catch(Exception e){System.out.println("Invalid Date or Format"); break; }
+                    System.out.println("Insert Shift Number 1 or 2, then press Enter");
+                    String shift = scanner.nextLine().trim();
+                    if (!shift.equals("1") && !shift.equals("2")) {
+                        System.out.println("Invalid Shift");
+                        break;
+                    }
+                    shift_number = Integer.parseInt(shift);
+                    System.out.println(sl.insertIntoShift(id,shift_number,date));
+
+                }
                 default: {
-                    System.out.println("Command Invalid: " + args[0]);
+                    System.out.println("Command Invalid:" );
                     break;
                 }
 
@@ -197,21 +287,22 @@ public class main {
 
     private static void printMainMenu() {
         System.out.println("" +
-                "Menu: \n " +
+                "Menu: \n" +
                 "1 - Insert New Worker \n" +
                 "2 - Update Worker \n" + //constraints/data/role
                 "3 - Get Worker Info \n" +
                 "4 - Get Worker Hour Constraints \n" +
                 "5 - Get Shift Schedule \n" +
-                "6 - Update Shift Requirements \n " +
+                "6 - Update Shift Requirements \n" +
                 "7 - Get Shift History \n" +
+                "8 - Insert Worker To Shift \n" +
                 "0 - Exit System"
         );
     }
 
     private static void printUpdateMenu() {
         System.out.println("" +
-                "Menu: \n " +
+                "ID found, Choose Update And Press Enter: \n" +
                 "1 - Update Name \n" +
                 "2 - Update Bank Account \n" +
                 "3 - Update Role \n" +
@@ -223,6 +314,19 @@ public class main {
         );
     }
 
+    private static boolean isLegalDay(String day){
+        switch (day.toLowerCase()) {
+            case "monday":
+            case "tuesday":
+            case "wednesday":
+            case "thursday":
+            case "friday":
+            case "saturday":
+            case "sunday":
+                return true;
+            default: return false;
+        }
+    }
 
 
 
