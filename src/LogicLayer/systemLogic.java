@@ -6,11 +6,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 
 public class systemLogic {
 
 
     private DataBase db ;
+
 
 
     public systemLogic(){
@@ -104,13 +107,13 @@ public class systemLogic {
     }
 
     public String insertEmployeeRole(int id, String Role) {
-        String sql = "Insert Roles SET role = ?  "
-                + "WHERE id = ?";
+        String sql = "Insert INTO Roles (id,role) "
+                + "VALUES (? , ?) ";
         try (Connection conn = db.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // set the corresponding param
-            pstmt.setString(1, Role);
-            pstmt.setInt(2, id);
+            pstmt.setInt(1, id);
+            pstmt.setString(2, Role);
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -336,7 +339,7 @@ public class systemLogic {
         try (Connection conn = db.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // set the c¡orresponding param
+            // set the corresponding param
             pstmt.setDate(1, date);
             pstmt.setInt(2, shift_num);
             ResultSet rs = pstmt.executeQuery();
@@ -359,11 +362,28 @@ public class systemLogic {
 
 
     public void getWeekSchedule() {
-        String sql = "SELECT * from Shifts "
-                + "WHERE shift_date BETWEEN datetime('now', '-6 days') AND datetime('now', 'localtime')";
+        String sql = "SELECT * from Shifts,Roles "
+                + "Where shift_date BETWEEN ? And ? And shift_worker=Roles.id;";
+
+        LocalDate today = LocalDate.now();
+
+        // Go backward to get Monday
+        LocalDate monday = today;
+        while (monday.getDayOfWeek() != DayOfWeek.SUNDAY) {
+            monday = monday.minusDays(1);
+        }
+
+        // Go forward to get Sunday
+        LocalDate sunday = today;
+        while (sunday.getDayOfWeek() != DayOfWeek.SUNDAY) {
+            sunday = sunday.plusDays(1);
+        }
+
 
         try (Connection conn = db.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setDate(1, java.sql.Date.valueOf(monday));
+            pstmt.setDate(2, java.sql.Date.valueOf(sunday));
             ResultSet rs = pstmt.executeQuery();
 
             if (!rs.isBeforeFirst()) {
@@ -371,11 +391,14 @@ public class systemLogic {
                 return;
             }
             java.sql.Date lastDate = null;
+            System.out.println("-------------------------------------------------------------");
+            System.out.println( "|     Date     |  Shift Number  |  Employee Id |    Role    |");
+            System.out.println("-------------------------------------------------------------");
             while (rs.next()) {
-                    System.out.println( "Date: " + rs.getDate("shift_date")  +  "\t" );
-                        System.out.println(
-                        "Shift: " + rs.getInt("shift_of_day")  +  "\t" +
-                        "Employee ID: " + rs.getInt("shift_worker") + "\t" );
+                        System.out.println("| "+rs.getDate("shift_date")  + "   |"+"\t\t" +
+                                + rs.getInt("shift_of_day")  +  "\t\t" +
+                         "| "+rs.getInt("shift_worker") + "   |\t"
+                                + rs.getString("role")  +  "\t|" );
 
             }
         } catch (SQLException e) {

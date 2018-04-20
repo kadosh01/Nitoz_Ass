@@ -48,9 +48,9 @@ public class DataBase {
 
         String constraints = "CREATE TABLE IF NOT EXISTS Constraints (\n"
                 + "	id integer ,\n"
-                + "	day_of_week DAY , \n"
-                + "	start_time TIME NOT NULL ,\n"
-                + "	end_time TIME NOT NULL,\n"
+                + "	day_of_week VARCHAR(20) , \n"
+                + "	start_time HOUR ,\n"
+                + "	end_time HOUR ,\n"
                 + "PRIMARY KEY (id, day_of_week)"
                 + ");";
 
@@ -62,10 +62,20 @@ public class DataBase {
                 + ");";
 
         String requirements = "CREATE TABLE IF NOT EXISTS Requirements (\n"
-                + "	shift_date DATE , \n"
-                + "	shift_of_day INTEGER ,\n"
-                + "	shift_requirement VARCHAR(100) NOT NULL\n"
+                + "	shift_day VARCHAR(20) not NULL , \n"
+                + "	shift_of_day INTEGER DEFAULT '1',\n"
+                + "	shift_requirement_role VARCHAR(100) NOT NULL,\n"
+                + "	amount INTEGER DEFAULT '0',\n"
+                + "PRIMARY KEY (shift_day , shift_of_day , shift_requirement_role)"
                 + ");";
+
+        String Role_Trigger = "CREATE Trigger IF NOT EXISTS Insert_Role\n" +
+                "BEFORE INSERT ON Roles \n " +
+                "WHEN new.id NOT IN ( SELECT id FROM Workers W\n" +
+                "            WHERE W.id=New.id IS NOT NULL )\n" +
+                "BEGIN\n" +
+                "   SELECT Raise (ABORT,'Person cannot be Student and Teacher at the same time');\n" +
+                "END;";
 
 
         try (Connection conn = DriverManager.getConnection(url);
@@ -76,6 +86,7 @@ public class DataBase {
             stmt.execute(constraints);
             stmt.execute(shifts);
             stmt.execute(requirements);
+            stmt.execute(Role_Trigger);
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());

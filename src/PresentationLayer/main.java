@@ -16,18 +16,15 @@ public class main {
 
 
     public static void main(String[] args) throws ParseException {
-        //DataBase db = new DataBase("WORKERS_MODULE");
+        DataBase db = new DataBase("WORKERS_MODULE");
         systemLogic sl = new systemLogic();
-        //db.createNewDatabase();
-        //db.createTables(); //if not exists
+        db.createNewDatabase();
+        db.createTables(); //if not exists
 
 
        // printMainMenu();
         Scanner scanner = new Scanner(System.in);
         String inputString = "1";
-        //inputString.trim();
-
-
 
         while (inputString != "0") {
             printMainMenu();
@@ -55,8 +52,8 @@ public class main {
                     System.out.println("Insert Employee Role, then press Enter");
                     String role = scanner.nextLine().trim();
 
-                    sl.insertEmployeeRole(id,role);
                     System.out.println(sl.insertNewEmployee(id,first_name,last_name,BankAccount,date,working_Conditions));
+                    System.out.println(sl.insertEmployeeRole(id,role));
 
                     break;
                 }
