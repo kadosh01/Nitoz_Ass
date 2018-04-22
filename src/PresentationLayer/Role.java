@@ -1,5 +1,7 @@
 package PresentationLayer;
 
+import java.util.Objects;
+
 public class Role {
     private int id;
     private String _role;
@@ -25,5 +27,21 @@ public class Role {
 
     public void set_id(int _id) {
         this._id = _id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return id == role.id &&
+                _id == role._id &&
+                Objects.equals(_role, role._role);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, _role, _id);
     }
 }

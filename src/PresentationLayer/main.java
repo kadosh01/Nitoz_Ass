@@ -183,7 +183,17 @@ public class main {
                         System.out.println("Employee Id not in System");
                         break;
                     }
-                    dao.getEmployeeInfo(id);
+                    Employee e=dao.getEmployeeInfo(id);
+
+                System.out.println("-----Employee Information-----\n" +
+                        "ID: " + e.get_Id() +  "\n" +
+                        "First Name: " + e.get_firstName() + "\n" +
+                        "Last Name: " +e.get_lastName() + "\n" +
+                        "Bank Acccount No.: " + e.get_bankAccount() + "\n" +
+                        "Working Conditions : " + e.get_conditions()+ "\n" +
+                        "Starting Date: " + e.get_startDate().toString() + "\n" +
+                        "------------------------------");
+
                     break;
                 }
 
@@ -268,6 +278,19 @@ public class main {
                     System.out.println(dao.insertIntoShift(id,new Shift(shift_number,date)));
 
                 }
+                case "9": {//employee role
+                    int id;
+                    System.out.println("Insert Employee ID, then press Enter");
+                    try { id = Integer.parseInt(scanner.nextLine().trim());}
+                    catch(NumberFormatException e){System.out.println("Error ID must be Numbers Only"); break;}
+                    if(!dao.checkIfIdExists(id)){
+                        System.out.println("Employee Id not in System");
+                        break;
+                    }
+                    Role role=dao.getEmployeeRole(id);
+                    System.out.println("Employee Role is : "+role.get_role());
+                    break;
+                }
                 default: {
                     System.out.println("Command Invalid:" );
                     break;
@@ -289,6 +312,7 @@ public class main {
                 "6 - Update Shift Requirements \n" +
                 "7 - Get Shift History \n" +
                 "8 - Insert Worker To Shift \n" +
+                "9 - Get Worker Role \n" +
                 "0 - Exit System"
         );
     }

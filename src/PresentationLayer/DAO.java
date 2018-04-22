@@ -119,6 +119,30 @@ public class DAO {
         }
         return "Employee was successfully updated";
     }
+    public Role getEmployeeRole(int id) {
+        String sql = "SELECT * FROM Roles "
+                + "WHERE id = ? ";
+        try (Connection conn = db.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // set the c¡orresponding param
+            pstmt.setInt(1, id);
+            // update
+            ResultSet rs =pstmt.executeQuery();
+
+            if(!rs.isBeforeFirst()) {
+                System.out.println("Employee doesn't exist");
+                return null;
+            }
+            while(rs.next())
+            {
+                return new Role(rs.getString("role"),id);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
 
     public String updateWorkingConditions(Employee emp) {
         String sql = "UPDATE Workers SET working_conditions = ?  "
@@ -176,7 +200,8 @@ public class DAO {
         return "Employee was successfully updated";
     }
 
-    public void getEmployeeInfo(int id) {
+    public Employee getEmployeeInfo(int id) {
+        Employee ret;
         String sql = "SELECT * from Workers "
                 + "WHERE id = ?";
 
@@ -190,23 +215,18 @@ public class DAO {
 
             if(!rs.isBeforeFirst()) {
                 System.out.println("Employee doesn't exist");
-                return;
+                return null;
             }
             while(rs.next())
             {
-                System.out.println("-----Employee Information-----\n" +
-                        "ID: " + rs.getInt("id") +  "\n" +
-                        "First Name: " + rs.getString("first_name") + "\n" +
-                        "Last Name: " +rs.getString("last_name") + "\n" +
-                        "Bank Acccount No.: " + rs.getString("bank_account") + "\n" +
-                        "Working Conditions : " + rs.getString("working_conditions") + "\n" +
-                        "Starting Date: " + rs.getDate("start_date") + "\n" +
-                        "------------------------------");
+                ret=new Employee(rs.getInt("id"),rs.getString("first_name"),rs.getString("last_name"),rs.getInt("bank_account"),rs.getDate("start_date"),rs.getString("working_conditions"));
+
+                return ret;
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-
+        return null;
     }
 
     public String deleteConstraints(int id, String day) {

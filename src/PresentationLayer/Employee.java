@@ -1,6 +1,7 @@
 package PresentationLayer;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Employee {
     private int _Id;
@@ -66,5 +67,24 @@ public class Employee {
 
     public void set_conditions(String _conditions) {
         this._conditions = _conditions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return _Id == employee._Id &&
+                _bankAccount == employee._bankAccount &&
+                Objects.equals(_firstName, employee._firstName) &&
+                Objects.equals(_lastName, employee._lastName) &&
+                Objects.equals(_startDate, employee._startDate) &&
+                Objects.equals(_conditions, employee._conditions);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(_Id, _firstName, _lastName, _bankAccount, _startDate, _conditions);
     }
 }
