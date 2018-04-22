@@ -1,15 +1,8 @@
 package PresentationLayer;
-import DataLayer.DataBase;
-import LogicLayer.systemLogic;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.Scanner;
 import java.lang.String;
-import java.sql.*;
 
 public class main {
 
@@ -17,7 +10,8 @@ public class main {
 
     public static void main(String[] args) throws ParseException {
         DataBase db = new DataBase("WORKERS_MODULE");
-        systemLogic sl = new systemLogic();
+
+        DAO dao = new DAO();
         db.createNewDatabase();
         db.createTables(); //if not exists
 
@@ -51,9 +45,10 @@ public class main {
                     catch(Exception e){System.out.println("Invalid Date or Format"); break; }
                     System.out.println("Insert Employee Role, then press Enter");
                     String role = scanner.nextLine().trim();
-
-                    System.out.println(sl.insertNewEmployee(id,first_name,last_name,BankAccount,date,working_Conditions));
-                    System.out.println(sl.insertEmployeeRole(id,role));
+                    Employee emp=new Employee(id,first_name,last_name,BankAccount,date,working_Conditions);
+                    Role _role=new Role(role,id);
+                    System.out.println(dao.insertNewEmployee(emp));
+                    System.out.println(dao.insertEmployeeRole(_role));
 
                     break;
                 }
@@ -62,7 +57,7 @@ public class main {
                     System.out.println("Insert Employee ID, then press Enter");
                     try { id = Integer.parseInt(scanner.nextLine().trim());}
                     catch(NumberFormatException e){System.out.println("Error ID must be Numbers Only"); break;}
-                    if(!sl.checkIfIdExists(id)){
+                    if(!dao.checkIfIdExists(id)){
                         System.out.println("Employee Id not in System");
                         break;
                         }
@@ -74,7 +69,8 @@ public class main {
                             String first_name = scanner.nextLine().trim();
                             System.out.println("Insert New Last Name, then press Enter");
                             String last_name = scanner.nextLine().trim();
-                            System.out.println(sl.updateEmployeeName(id,first_name,last_name));
+                            Employee e=new Employee(id,first_name,last_name,0,null,null);
+                            System.out.println(dao.updateEmployeeName(e));
                             break;
                         }
                         case "2" : //bank account
@@ -83,21 +79,21 @@ public class main {
                             System.out.println("Insert New Bank Account, then press Enter");
                             try {BankAccount = Integer.parseInt(scanner.nextLine().trim());}
                             catch(NumberFormatException e){System.out.println("Error Bank Account must be Numbers Only"); break;}
-                            System.out.println(sl.updateEmployeeBank(id,BankAccount));
+                            System.out.println(dao.updateEmployeeBank(new Employee(id,null,null,BankAccount,null,null)));
                             break;
                         }
                         case "3" : //role
                         {
                             System.out.println("Insert New Employee Role, then press Enter");
                             String role = scanner.nextLine().trim();
-                            System.out.println(sl.updateEmployeeRole(id,role));
+                            System.out.println(dao.updateEmployeeRole(new Role(role,id)));
                             break;
                         }
                         case "4" : //working conditions
                         {
                             System.out.println("Insert New Employee Working Conditions, then press Enter");
                             String working_conditions = scanner.nextLine().trim();
-                            System.out.println(sl.updateWorkingConditions(id,working_conditions));
+                            System.out.println(dao.updateWorkingConditions(new Employee(id,null,null,0,null,working_conditions)));
                             break;
                         }
                         case "5" : //add constraint
@@ -121,7 +117,7 @@ public class main {
                                 System.out.println("Error: Invalid Hour Format");
                                 break;
                             }
-                            System.out.println(sl.insertNewConstraints(id,day,start_hour,end_hour));
+                            System.out.println(dao.insertNewConstraints(id,day,start_hour,end_hour));
                             break;
                         }
 
@@ -146,7 +142,7 @@ public class main {
                                 System.out.println("Error: Invalid Hour Format");
                                 break;
                             }
-                            System.out.println(sl.updateConstraints(id,day,start_hour,end_hour));
+                            System.out.println(dao.updateConstraints(id,day,start_hour,end_hour));
                             break;
                         }
 
@@ -159,7 +155,7 @@ public class main {
                                 System.out.println("Invalid day");
                                 break;
                             }
-                            System.out.println(sl.deleteConstraints(id,day));
+                            System.out.println(dao.deleteConstraints(id,day));
                             break;
                         }
                         case "0" : //back
@@ -183,11 +179,11 @@ public class main {
                     System.out.println("Insert Employee ID, then press Enter");
                     try { id = Integer.parseInt(scanner.nextLine().trim());}
                     catch(NumberFormatException e){System.out.println("Error ID must be Numbers Only"); break;}
-                    if(!sl.checkIfIdExists(id)){
+                    if(!dao.checkIfIdExists(id)){
                         System.out.println("Employee Id not in System");
                         break;
                     }
-                    sl.getEmployeeInfo(id);
+                    dao.getEmployeeInfo(id);
                     break;
                 }
 
@@ -196,17 +192,17 @@ public class main {
                     System.out.println("Insert Employee ID, then press Enter");
                     try { id = Integer.parseInt(scanner.nextLine().trim());}
                     catch(NumberFormatException e){System.out.println("Error ID must be Numbers Only"); break;}
-                    if(!sl.checkIfIdExists(id)){
+                    if(!dao.checkIfIdExists(id)){
                         System.out.println("Employee Id not in System");
                         break;
                     }
-                    sl.getEmployeeConstraints(id);
+                    dao.getEmployeeConstraints(id);
 
                     break;
                 }
 
                 case "5": { ////// Get Shift Schedule
-                    sl.getWeekSchedule();
+                    dao.getWeekSchedule();
                     break;
                 }
 
@@ -227,7 +223,7 @@ public class main {
                     shift_number = Integer.parseInt(shift);
                     System.out.println("Insert New Requirement, then press Enter");
                     String req = scanner.nextLine().trim();
-                    System.out.println(sl.insertShiftRequirement(date,shift_number,req));
+                    System.out.println(dao.insertShiftRequirement(date,shift_number,req));
                     break;
                 }
 
@@ -244,7 +240,7 @@ public class main {
                         break;
                     }
                     shift_number = Integer.parseInt(shift);
-                    sl.getShiftSchedule(date,shift_number);
+                    dao.getShiftSchedule(date,shift_number);
                     break;
                 }
 
@@ -255,7 +251,7 @@ public class main {
                     System.out.println("Insert Employee ID, then press Enter");
                     try { id = Integer.parseInt(scanner.nextLine().trim());}
                     catch(NumberFormatException e){System.out.println("Error ID must be Numbers Only"); break;}
-                    if(!sl.checkIfIdExists(id)){
+                    if(!dao.checkIfIdExists(id)){
                         System.out.println("Employee Id not in System");
                         break;
                     }
@@ -269,7 +265,7 @@ public class main {
                         break;
                     }
                     shift_number = Integer.parseInt(shift);
-                    System.out.println(sl.insertIntoShift(id,shift_number,date));
+                    System.out.println(dao.insertIntoShift(id,new Shift(shift_number,date)));
 
                 }
                 default: {

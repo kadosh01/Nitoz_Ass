@@ -1,6 +1,4 @@
-package LogicLayer;
-
-import DataLayer.DataBase;
+package PresentationLayer;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,14 +7,14 @@ import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 
-public class systemLogic {
+public class DAO {
 
 
     private DataBase db ;
 
 
 
-    public systemLogic(){
+    public DAO(){
         db = new DataBase("WORKERS_MODULE");
         db.createNewDatabase();
         db.createTables(); //if not exists
@@ -38,17 +36,17 @@ public class systemLogic {
                 }
             }
         }
-         catch (SQLException e) {
-        if (e.getMessage().contains(("SQLITE_CONSTRAINT_PRIMARYKEY")))
-            System.out.println("error");
+        catch (SQLException e) {
+            if (e.getMessage().contains(("SQLITE_CONSTRAINT_PRIMARYKEY")))
+                System.out.println("error");
             return false;
 
         }
         return false;
-        }
+    }
 
 
-    public String insertNewEmployee(int id, String name, String last_name,int bank ,java.sql.Date start_date,String conditions) {
+    public String insertNewEmployee(Employee emp) {
         // set the corresponding param
 
         String sql = "INSERT INTO Workers (id, first_name , last_name , bank_account , working_conditions , start_date) "
@@ -56,12 +54,12 @@ public class systemLogic {
 
         try (Connection conn = db.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // set the corresponding param
-            pstmt.setInt(1, id);
-            pstmt.setString(2, name);
-            pstmt.setString(3, last_name);
-            pstmt.setInt(4, bank);
-            pstmt.setString(5, conditions);
-            pstmt.setDate(6,start_date);
+            pstmt.setInt(1, emp.get_Id());
+            pstmt.setString(2, emp.get_firstName());
+            pstmt.setString(3, emp.get_lastName());
+            pstmt.setInt(4, emp.get_bankAccount());
+            pstmt.setString(5, emp.get_conditions());
+            pstmt.setDate(6,emp.get_startDate());
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -72,16 +70,16 @@ public class systemLogic {
         return "The employee was successfully inserted";
     }
 
-    public String updateEmployeeName(int id, String first_name, String last_name) {
+    public String updateEmployeeName(Employee emp) {
         String sql = "UPDATE Workers SET first_name = ? , "
                 + "last_name = ? "
                 + "WHERE id = ?";
         try (Connection conn = db.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // set the corresponding param
-            pstmt.setString(1, first_name);
-            pstmt.setString(2, last_name);
-            pstmt.setInt(3, id);
+            pstmt.setString(1, emp.get_firstName());
+            pstmt.setString(2, emp.get_lastName());
+            pstmt.setInt(3, emp.get_Id());
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -90,14 +88,14 @@ public class systemLogic {
         return "Employee was successfully updated";
     }
 
-    public String updateEmployeeRole(int id, String Role) {
+    public String updateEmployeeRole(Role role) {
         String sql = "UPDATE Roles SET role = ?  "
                 + "WHERE id = ?";
         try (Connection conn = db.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // set the corresponding param
-            pstmt.setString(1, Role);
-            pstmt.setInt(2, id);
+            pstmt.setString(1, role.get_role());
+            pstmt.setInt(2, role.get_id());
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -106,14 +104,14 @@ public class systemLogic {
         return "Employee was successfully updated";
     }
 
-    public String insertEmployeeRole(int id, String Role) {
+    public String insertEmployeeRole(Role role) {
         String sql = "Insert INTO Roles (id,role) "
                 + "VALUES (? , ?) ";
         try (Connection conn = db.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // set the corresponding param
-            pstmt.setInt(1, id);
-            pstmt.setString(2, Role);
+            pstmt.setInt(1, role.get_id());
+            pstmt.setString(2, role.get_role());
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -122,14 +120,14 @@ public class systemLogic {
         return "Employee was successfully updated";
     }
 
-    public String updateWorkingConditions(int id, String wk) {
+    public String updateWorkingConditions(Employee emp) {
         String sql = "UPDATE Workers SET working_conditions = ?  "
                 + "WHERE id = ?";
         try (Connection conn = db.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // set the corresponding param
-            pstmt.setString(1, wk);
-            pstmt.setInt(2, id);
+            pstmt.setString(1, emp.get_conditions());
+            pstmt.setInt(2, emp.get_Id());
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -138,14 +136,14 @@ public class systemLogic {
         return "Employee was successfully updated";
     }
 
-    public String updateEmployeeBank(int id, int bank) {
+    public String updateEmployeeBank(Employee emp) {
         String sql = "UPDATE Workers SET bank_account = ? "
                 + "WHERE id = ?";
         try (Connection conn = db.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // set the corresponding param
-            pstmt.setInt(1, bank);
-            pstmt.setInt(2, id);
+            pstmt.setInt(1, emp.get_bankAccount());
+            pstmt.setInt(2, emp.get_Id());
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -154,7 +152,7 @@ public class systemLogic {
         return "Employee was successfully updated";
     }
 
-    public String updateEmployeeInfo(int id, String name, String last_name,int bank, java.sql.Date date,String conditions) {
+    public String updateEmployeeInfo(Employee emp) {
         String sql = "UPDATE Workers SET first_name = ? , "
                 + "last_name = ? , start_date = ? , bank_account = ? , working_conditions = ?"
                 + "WHERE id = ?";
@@ -162,12 +160,12 @@ public class systemLogic {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             // set the corresponding param
-            pstmt.setString(1, name);
-            pstmt.setString(2, last_name);
-            pstmt.setDate(3, date);
-            pstmt.setInt(4, bank);
-            pstmt.setString(5, conditions);
-            pstmt.setInt(6, id);
+            pstmt.setString(1, emp.get_firstName());
+            pstmt.setString(2, emp.get_lastName());
+            pstmt.setDate(3, emp.get_startDate());
+            pstmt.setInt(4, emp.get_bankAccount());
+            pstmt.setString(5, emp.get_conditions());
+            pstmt.setInt(6, emp.get_Id());
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -281,9 +279,9 @@ public class systemLogic {
             while(rs.next())
             {
                 System.out.println(
-                         "Day: " + rs.getString("day_of_week") + "\t" +
-                        "Start Time: " + rs.getTime("start_time") + "\t" +
-                        "End Time " + rs.getTime("end_time"));
+                        "Day: " + rs.getString("day_of_week") + "\t" +
+                                "Start Time: " + rs.getTime("start_time") + "\t" +
+                                "End Time " + rs.getTime("end_time"));
 
             }
         } catch (SQLException e) {
@@ -292,15 +290,15 @@ public class systemLogic {
 
     }
 
-    public String insertIntoShift(int id, int shift_num, java.sql.Date date) {
+    public String insertIntoShift(int id, Shift s) {
         String sql = "INSERT INTO Shifts (shift_date, shift_of_day , shift_worker ) "
                 + "VALUES ( ? ,? , ?)";
 
         try (Connection conn = db.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // set the corresponding param
 
-            pstmt.setDate(1,date);
-            pstmt.setInt(2, shift_num);
+            pstmt.setDate(1,s.getDate());
+            pstmt.setInt(2, s.getNum());
             pstmt.setInt(3, id);
             // update
             pstmt.executeUpdate();
@@ -395,15 +393,14 @@ public class systemLogic {
             System.out.println( "|     Date     |  Shift Number  |  Employee Id |    Role    |");
             System.out.println("-------------------------------------------------------------");
             while (rs.next()) {
-                        System.out.println("| "+rs.getDate("shift_date")  + "   |"+"\t\t" +
-                                + rs.getInt("shift_of_day")  +  "\t\t" +
-                         "| "+rs.getInt("shift_worker") + "   |\t"
-                                + rs.getString("role")  +  "\t|" );
+                System.out.println("| "+rs.getDate("shift_date")  + "   |"+"\t\t" +
+                        + rs.getInt("shift_of_day")  +  "\t\t" +
+                        "| "+rs.getInt("shift_worker") + "   |\t"
+                        + rs.getString("role")  +  "\t|" );
 
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
-
 }
