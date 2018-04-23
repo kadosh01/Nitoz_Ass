@@ -12,8 +12,8 @@ public class main {
         DataBase db = new DataBase("WORKERS_MODULE");
 
         DAO dao = new DAO();
-        db.createNewDatabase();
-        db.createTables(); //if not exists
+        //db.createNewDatabase();
+        //db.createTables(); //if not exists
 
 
        // printMainMenu();
@@ -46,9 +46,8 @@ public class main {
                     System.out.println("Insert Employee Role, then press Enter");
                     String role = scanner.nextLine().trim();
                     Employee emp=new Employee(id,first_name,last_name,BankAccount,date,working_Conditions);
-                    Role _role=new Role(role,id);
                     System.out.println(dao.insertNewEmployee(emp));
-                    System.out.println(dao.insertEmployeeRole(_role));
+                    System.out.println(dao.insertEmployeeRole(id,role));
 
                     break;
                 }
@@ -86,7 +85,7 @@ public class main {
                         {
                             System.out.println("Insert New Employee Role, then press Enter");
                             String role = scanner.nextLine().trim();
-                            System.out.println(dao.updateEmployeeRole(new Role(role,id)));
+                            System.out.println(dao.updateEmployeeRole(id,role));
                             break;
                         }
                         case "4" : //working conditions
@@ -287,8 +286,8 @@ public class main {
                         System.out.println("Employee Id not in System");
                         break;
                     }
-                    Role role=dao.getEmployeeRole(id);
-                    System.out.println("Employee Role is : "+role.get_role());
+                    String role=dao.getEmployeeRole(id);
+                    System.out.println("Employee Role is : "+role);
                     break;
                 }
                 default: {

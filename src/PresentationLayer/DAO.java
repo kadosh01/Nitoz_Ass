@@ -88,14 +88,14 @@ public class DAO {
         return "Employee was successfully updated";
     }
 
-    public String updateEmployeeRole(Role role) {
+    public String updateEmployeeRole(int id, String role) {
         String sql = "UPDATE Roles SET role = ?  "
                 + "WHERE id = ?";
         try (Connection conn = db.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // set the corresponding param
-            pstmt.setString(1, role.get_role());
-            pstmt.setInt(2, role.get_id());
+            pstmt.setString(1, role);
+            pstmt.setInt(2, id);
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -104,14 +104,14 @@ public class DAO {
         return "Employee was successfully updated";
     }
 
-    public String insertEmployeeRole(Role role) {
+    public String insertEmployeeRole(int id , String role) {
         String sql = "Insert INTO Roles (id,role) "
                 + "VALUES (? , ?) ";
         try (Connection conn = db.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // set the corresponding param
-            pstmt.setInt(1, role.get_id());
-            pstmt.setString(2, role.get_role());
+            pstmt.setInt(1, id);
+            pstmt.setString(2, role);
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -119,7 +119,7 @@ public class DAO {
         }
         return "Employee was successfully updated";
     }
-    public Role getEmployeeRole(int id) {
+    public String getEmployeeRole(int id) {
         String sql = "SELECT * FROM Roles "
                 + "WHERE id = ? ";
         try (Connection conn = db.connect();
@@ -136,7 +136,7 @@ public class DAO {
             }
             while(rs.next())
             {
-                return new Role(rs.getString("role"),id);
+                return (rs.getString("role"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

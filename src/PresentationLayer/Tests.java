@@ -50,6 +50,10 @@ public class Tests {
 
     @org.junit.Test
     public void getEmployeeInfo() {
+        Employee e=new Employee(11111111,"David","Ben-Gurion",123456,java.sql.Date.valueOf("1990-01-18"),"i ask for Good selary!");
+        _dao.insertNewEmployee(e);
+        Employee test=_dao.getEmployeeInfo(e.get_Id());
+        assertEquals(e,test);
     }
 
     @org.junit.Test
