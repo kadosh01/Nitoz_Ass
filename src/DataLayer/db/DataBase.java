@@ -1,4 +1,4 @@
-package PresentationLayer;
+package DataLayer.db;
 
 import java.sql.*;
 public class DataBase {
@@ -38,12 +38,8 @@ public class DataBase {
                 + "	last_name VARCHAR (100) NOT NULL,\n"
                 + " bank_account INTEGER NOT NULL,\n "
                 + " working_conditions TEXT,\n"
-                + " start_date DATE \n"
-                + ");";
-
-        String roles = "CREATE TABLE IF NOT EXISTS Roles (\n"
-                + "	id integer PRIMARY KEY,\n"
-                + "	role VARCHAR(100) NOT NULL\n"
+                + " start_date DATE, \n"
+                + " role VARCHAR(100)\n"
                 + ");";
 
         String constraints = "CREATE TABLE IF NOT EXISTS Constraints (\n"
@@ -82,11 +78,10 @@ public class DataBase {
              Statement stmt = conn.createStatement()) {
             // create a new table
             stmt.execute(workers);
-            stmt.execute(roles);
             stmt.execute(constraints);
             stmt.execute(shifts);
             stmt.execute(requirements);
-            stmt.execute(Role_Trigger);
+            //stmt.execute(Role_Trigger);
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());

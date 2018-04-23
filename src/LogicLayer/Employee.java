@@ -1,7 +1,7 @@
-package PresentationLayer;
+package LogicLayer;
 
-import java.util.Date;
 import java.util.Objects;
+import java.util.Vector;
 
 public class Employee {
     private int _Id;
@@ -10,15 +10,27 @@ public class Employee {
     private int _bankAccount;
     private java.sql.Date _startDate;
     private String _conditions;
+    private String role;
+    private Vector<Constraints> list;
 
-    public Employee(int _Id, String _firstName, String _lastName, int _bankAccount, java.sql.Date _startDate, String _conditions) {
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public Employee(int _Id, String _firstName, String _lastName, int _bankAccount, java.sql.Date _startDate, String _conditions, String role) {
         this._Id = _Id;
         this._firstName = _firstName;
         this._lastName = _lastName;
         this._bankAccount = _bankAccount;
         this._startDate = _startDate;
         this._conditions = _conditions;
+        this.role = role;
     }
+
 
 
     public int get_Id() {
@@ -79,12 +91,14 @@ public class Employee {
                 Objects.equals(_firstName, employee._firstName) &&
                 Objects.equals(_lastName, employee._lastName) &&
                 Objects.equals(_startDate, employee._startDate) &&
-                Objects.equals(_conditions, employee._conditions);
+                Objects.equals(_conditions, employee._conditions) &&
+                Objects.equals(role, employee.role) &&
+                Objects.equals(list, employee.list);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(_Id, _firstName, _lastName, _bankAccount, _startDate, _conditions);
+        return Objects.hash(_Id, _firstName, _lastName, _bankAccount, _startDate, _conditions, role, list);
     }
 }

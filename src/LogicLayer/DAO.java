@@ -1,4 +1,7 @@
-package PresentationLayer;
+package LogicLayer;
+
+import DataLayer.db.DataBase;
+import javafx.util.Pair;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.LinkedList;
+import java.util.Vector;
 
 public class DAO {
 
@@ -45,12 +50,30 @@ public class DAO {
         return false;
     }
 
+    public String deleteEmployee(int id) {
+        // set the corresponding param
+
+        String sql = "DELETE FROM Workers"
+                + " WHERE id = ?";
+
+        try (Connection conn = db.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            // set the corresponding param
+            pstmt.setInt(1, id);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            if (e.getMessage().contains(("SQLITE_CONSTRAINT_PRIMARYKEY")))
+                return "Error: Worker Id not in System";
+            return e.getMessage();
+        }
+        return "The employee was successfully deleted";
+    }
 
     public String insertNewEmployee(Employee emp) {
         // set the corresponding param
 
-        String sql = "INSERT INTO Workers (id, first_name , last_name , bank_account , working_conditions , start_date) "
-                + "VALUES ( ? ,? , ? ,?, ?, ?)";
+        String sql = "INSERT INTO Workers (id, first_name , last_name , bank_account , working_conditions , start_date, role) "
+                + "VALUES ( ? ,? , ? ,?, ?, ?,?)";
 
         try (Connection conn = db.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // set the corresponding param
@@ -60,6 +83,7 @@ public class DAO {
             pstmt.setInt(4, emp.get_bankAccount());
             pstmt.setString(5, emp.get_conditions());
             pstmt.setDate(6,emp.get_startDate());
+            pstmt.setString(7,emp.getRole());
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -69,6 +93,7 @@ public class DAO {
         }
         return "The employee was successfully inserted";
     }
+
 
     public String updateEmployeeName(Employee emp) {
         String sql = "UPDATE Workers SET first_name = ? , "
@@ -89,7 +114,7 @@ public class DAO {
     }
 
     public String updateEmployeeRole(int id, String role) {
-        String sql = "UPDATE Roles SET role = ?  "
+        String sql = "UPDATE Workers SET role = ?  "
                 + "WHERE id = ?";
         try (Connection conn = db.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -104,23 +129,8 @@ public class DAO {
         return "Employee was successfully updated";
     }
 
-    public String insertEmployeeRole(int id , String role) {
-        String sql = "Insert INTO Roles (id,role) "
-                + "VALUES (? , ?) ";
-        try (Connection conn = db.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            // set the corresponding param
-            pstmt.setInt(1, id);
-            pstmt.setString(2, role);
-            // update
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            return e.getMessage();
-        }
-        return "Employee was successfully updated";
-    }
     public String getEmployeeRole(int id) {
-        String sql = "SELECT * FROM Roles "
+        String sql = "SELECT * FROM Workers "
                 + "WHERE id = ? ";
         try (Connection conn = db.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -178,7 +188,7 @@ public class DAO {
 
     public String updateEmployeeInfo(Employee emp) {
         String sql = "UPDATE Workers SET first_name = ? , "
-                + "last_name = ? , start_date = ? , bank_account = ? , working_conditions = ?"
+                + "last_name = ? , start_date = ? , bank_account = ? , working_conditions = ? , role = ?"
                 + "WHERE id = ?";
         try (Connection conn = db.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -189,7 +199,8 @@ public class DAO {
             pstmt.setDate(3, emp.get_startDate());
             pstmt.setInt(4, emp.get_bankAccount());
             pstmt.setString(5, emp.get_conditions());
-            pstmt.setInt(6, emp.get_Id());
+            pstmt.setString(6, emp.getRole());
+            pstmt.setInt(7, emp.get_Id());
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -219,7 +230,7 @@ public class DAO {
             }
             while(rs.next())
             {
-                ret=new Employee(rs.getInt("id"),rs.getString("first_name"),rs.getString("last_name"),rs.getInt("bank_account"),rs.getDate("start_date"),rs.getString("working_conditions"));
+                ret=new Employee(rs.getInt("id"),rs.getString("first_name"),rs.getString("last_name"),rs.getInt("bank_account"),rs.getDate("start_date"),rs.getString("working_conditions"),rs.getString("role"));
 
                 return ret;
             }
@@ -248,16 +259,30 @@ public class DAO {
         return "Employee constraint was successfully deleted";
     }
 
-    public String updateConstraints(int id, String day,java.sql.Time start_hour, java.sql.Time end_hour){
-        // set the corresponding param
-        deleteConstraints(id,day);
-        insertNewConstraints(id,day,start_hour,end_hour);
+    public String updateConstraints(Constraints c){
+        String sql = "UPDATE Constraints SET start_time = ? , "
+                + "end_time = ? WHERE day_of_week = ?";
+
+        try (Connection conn = db.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // set the corresponding param
+            pstmt.setTime(1, c.getStart_hour());
+            pstmt.setTime(2, c.getEnd_hour());
+            pstmt.setString(3, c.getDay());
+            // update
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            if (e.getMessage().contains(("SQLITE_CONSTRAINT_PRIMARYKEY")))
+                return "Constraint not exist";
+            return e.getMessage();
+        }
 
         return "Employee constraint was successfully updated";
 
     }
 
-    public String insertNewConstraints(int id, String day, java.sql.Time start_hour, java.sql.Time end_hour) {
+    public String insertNewConstraints(Constraints c) {
         // set the corresponding param
 
         String sql = "INSERT INTO Constraints (id, day_of_week , start_time , end_time) "
@@ -267,10 +292,10 @@ public class DAO {
 
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // set the corresponding param
-            pstmt.setInt(1, id);
-            pstmt.setString(2, day);
-            pstmt.setTime(3, start_hour);
-            pstmt.setTime(4, end_hour);
+            pstmt.setInt(1, c.getId());
+            pstmt.setString(2, c.getDay());
+            pstmt.setTime(3, c.getStart_hour());
+            pstmt.setTime(4, c.getEnd_hour());
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -279,7 +304,8 @@ public class DAO {
         return "The Employee Constraint was successfully inserted";
     }
 
-    public void getEmployeeConstraints(int id) {
+    public Vector<Constraints> getEmployeeConstraints(int id) {
+        Vector<Constraints> list=new Vector<>();
         String sql = "SELECT * from Constraints "
                 + "WHERE id = ?";
 
@@ -293,21 +319,18 @@ public class DAO {
 
             if(!rs.isBeforeFirst()){
                 System.out.println("Employee doesn't exist");
-                return;
+                return null;
             }
             System.out.println();
             while(rs.next())
             {
-                System.out.println(
-                        "Day: " + rs.getString("day_of_week") + "\t" +
-                                "Start Time: " + rs.getTime("start_time") + "\t" +
-                                "End Time " + rs.getTime("end_time"));
-
+                Constraints c=new Constraints(id,rs.getString("day_of_week"),rs.getTime("start_time"),rs.getTime("end_time"));
+                list.add(c);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-
+        return list;
     }
 
     public String insertIntoShift(int id, Shift s) {
@@ -330,18 +353,38 @@ public class DAO {
         return "The employee was successfully inserted into Shift";
     }
 
-    public String insertShiftRequirement(java.sql.Date date, int shift_num, String req) {
+    public String deleteFromShift(int id,java.sql.Date date) {
+        String sql = "DELETE from Shifts "
+                + "WHERE shift_worker = ? AND shift_date = ?";
+
+        try (Connection conn = db.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // set the corresponding param
+            pstmt.setInt(1, id);
+            pstmt.setDate(2, date);
+            // update
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            return e.getMessage();
+        }
+
+        return "Employee was successfully deleted from shift";
+    }
+
+    public String insertShiftRequirement(String day, int shift_num, String req,int sum) {
 
 
-        String sql = "INSERT INTO Requirements (shift_date, shift_of_day , shift_requirement ) "
-                + "VALUES ( ? ,? , ?)";
+        String sql = "INSERT INTO Requirements (shift_day, shift_of_day , shift_requirement_role , amount ) "
+                + "VALUES ( ? ,? , ? , ?)";
 
         try (Connection conn = db.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // set the corresponding param
 
-            pstmt.setDate(1,date);
+            pstmt.setString(1,day);
             pstmt.setInt(2, shift_num);
             pstmt.setString(3, req);
+            pstmt.setInt(4, sum);
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -350,8 +393,59 @@ public class DAO {
         return "Requirement Succesfully Added";
     }
 
-    public void getShiftSchedule(java.sql.Date date, int shift_num) {
-        String sql = "SELECT * from Shifts,Roles "
+    public Pair<String,Integer> getShiftRequirement(String day, int shift_num) {
+        Pair<String,Integer> p=null;
+        String sql = "SELECT * FROM Requirements "
+                + "WHERE shift_day = ? AND shift_of_day = ?";
+
+        try (Connection conn = db.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // set the c¡orresponding param
+            pstmt.setString(1, day);
+            pstmt.setInt(2, shift_num);
+            // update
+            ResultSet rs =pstmt.executeQuery();
+
+            if(!rs.isBeforeFirst()){
+                System.out.println("Employee doesn't exist");
+                return null;
+            }
+            while(rs.next())
+            {
+                p=new Pair<>(rs.getString("shift_requirement_role"),rs.getInt("amount"));
+            }
+
+
+        } catch (SQLException e) {
+            return null;
+        }
+        return p;
+    }
+
+    public String deleteShiftrequirement(String day,int num,String role) {
+        String sql = "DELETE from Requirements "
+                + "WHERE shift_day = ? AND shift_of_day = ? AND shift_requirement_role = ?";
+
+        try (Connection conn = db.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // set the corresponding param
+            pstmt.setString(1, day);
+            pstmt.setInt(2, num);
+            pstmt.setString(3, role);
+            // update
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            return e.getMessage();
+        }
+
+        return "Requirements was successfully deleted from shift";
+    }
+
+    public LinkedList<Pair<Integer,Shift>> getShiftScheduleHistory(java.sql.Date date, int shift_num) {
+        LinkedList<Pair<Integer,Shift>> list=new LinkedList<>();
+        String sql = "SELECT * from Shifts "
                 + "WHERE shift_date = ? AND shift_of_day = ?";
 
         try (Connection conn = db.connect();
@@ -364,17 +458,17 @@ public class DAO {
 
             if (!rs.isBeforeFirst()) {
                 System.out.println("Empty Shift");
-                return;
+                return list;
             }
-            System.out.println("Date : " + date.toString() + "\t Shift Number: " + shift_num);
+            //System.out.println("Date : " + date.toString() + "\t Shift Number: " + shift_num);
             while (rs.next()) {
-                System.out.println(
-                        "Employee ID: " + rs.getInt("shift_worker") + "\t" +
-                                "Role: " + rs.getString("role") + "\t");
+                list.add(new Pair<Integer, Shift>(rs.getInt("shift_worker"),new Shift(rs.getInt("shift_of_day"),rs.getDate("shift_date"))));
+
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        return list;
     }
 
 

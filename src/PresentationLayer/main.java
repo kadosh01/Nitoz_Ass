@@ -1,8 +1,17 @@
 package PresentationLayer;
 
+import DataLayer.db.DataBase;
+import LogicLayer.Constraints;
+import LogicLayer.DAO;
+import LogicLayer.Employee;
+import LogicLayer.Shift;
+import javafx.util.Pair;
+
 import java.text.ParseException;
+import java.util.LinkedList;
 import java.util.Scanner;
 import java.lang.String;
+import java.util.Vector;
 
 public class main {
 
@@ -45,9 +54,8 @@ public class main {
                     catch(Exception e){System.out.println("Invalid Date or Format"); break; }
                     System.out.println("Insert Employee Role, then press Enter");
                     String role = scanner.nextLine().trim();
-                    Employee emp=new Employee(id,first_name,last_name,BankAccount,date,working_Conditions);
+                    Employee emp=new Employee(id,first_name,last_name,BankAccount,date,working_Conditions,role);
                     System.out.println(dao.insertNewEmployee(emp));
-                    System.out.println(dao.insertEmployeeRole(id,role));
 
                     break;
                 }
@@ -68,7 +76,7 @@ public class main {
                             String first_name = scanner.nextLine().trim();
                             System.out.println("Insert New Last Name, then press Enter");
                             String last_name = scanner.nextLine().trim();
-                            Employee e=new Employee(id,first_name,last_name,0,null,null);
+                            Employee e=new Employee(id,first_name,last_name,0,null,null,null);
                             System.out.println(dao.updateEmployeeName(e));
                             break;
                         }
@@ -78,7 +86,7 @@ public class main {
                             System.out.println("Insert New Bank Account, then press Enter");
                             try {BankAccount = Integer.parseInt(scanner.nextLine().trim());}
                             catch(NumberFormatException e){System.out.println("Error Bank Account must be Numbers Only"); break;}
-                            System.out.println(dao.updateEmployeeBank(new Employee(id,null,null,BankAccount,null,null)));
+                            System.out.println(dao.updateEmployeeBank(new Employee(id,null,null,BankAccount,null,null,null)));
                             break;
                         }
                         case "3" : //role
@@ -92,7 +100,7 @@ public class main {
                         {
                             System.out.println("Insert New Employee Working Conditions, then press Enter");
                             String working_conditions = scanner.nextLine().trim();
-                            System.out.println(dao.updateWorkingConditions(new Employee(id,null,null,0,null,working_conditions)));
+                            System.out.println(dao.updateWorkingConditions(new Employee(id,null,null,0,null,working_conditions,null)));
                             break;
                         }
                         case "5" : //add constraint
@@ -116,7 +124,8 @@ public class main {
                                 System.out.println("Error: Invalid Hour Format");
                                 break;
                             }
-                            System.out.println(dao.insertNewConstraints(id,day,start_hour,end_hour));
+                            Constraints c=new Constraints(id,day,start_hour,end_hour);
+                            System.out.println(dao.insertNewConstraints(c));
                             break;
                         }
 
@@ -141,7 +150,8 @@ public class main {
                                 System.out.println("Error: Invalid Hour Format");
                                 break;
                             }
-                            System.out.println(dao.updateConstraints(id,day,start_hour,end_hour));
+                            Constraints c=new Constraints(id,day,start_hour,end_hour);
+                            System.out.println(dao.updateConstraints(c));
                             break;
                         }
 
@@ -205,8 +215,14 @@ public class main {
                         System.out.println("Employee Id not in System");
                         break;
                     }
-                    dao.getEmployeeConstraints(id);
+                    Vector<Constraints> l=dao.getEmployeeConstraints(id);
+                    for (Constraints c:l) {
 
+                        System.out.println(
+                                "Day: " + c.getDay() + "\t" +
+                                        "Start Time: " + c.getStart_hour().toString() + "\t" +
+                                        "End Time " + c.getEnd_hour().toString());
+                    }
                     break;
                 }
 
@@ -218,11 +234,10 @@ public class main {
 
 
                 case "6": { ////// Update Shift Requirements
-                    java.sql.Date date;
+                    String day;
                     int shift_number;
-                    System.out.println("Insert Shift date (yyyy-MM-dd), then press Enter");
-                    try {date = java.sql.Date.valueOf(scanner.nextLine());}
-                    catch(Exception e){System.out.println("Invalid Date or Format"); break; }
+                    System.out.println("Insert Shift day , then press Enter");
+                    day = scanner.nextLine().trim();
                     System.out.println("Insert Shift Number 1 or 2, then press Enter");
                     String shift = scanner.nextLine().trim();
                     if (!shift.equals("1") && !shift.equals("2")) {
@@ -232,7 +247,9 @@ public class main {
                     shift_number = Integer.parseInt(shift);
                     System.out.println("Insert New Requirement, then press Enter");
                     String req = scanner.nextLine().trim();
-                    System.out.println(dao.insertShiftRequirement(date,shift_number,req));
+                    System.out.println("Insert Amount, then press Enter");
+                    int sum = Integer.parseInt(scanner.nextLine().trim());
+                    System.out.println(dao.insertShiftRequirement(day,shift_number,req,sum));
                     break;
                 }
 
@@ -249,7 +266,13 @@ public class main {
                         break;
                     }
                     shift_number = Integer.parseInt(shift);
-                    dao.getShiftSchedule(date,shift_number);
+                    LinkedList<Pair<Integer, Shift>> list =dao.getShiftScheduleHistory(date,shift_number);
+
+                    for (Pair<Integer,Shift> p:list) {
+                        System.out.println(
+                                "Date : "+p.getValue().getDate().toString()+"\t"+ "Employee ID: " + p.getKey() + "\t" +
+                                        "Shift Num: " + p.getValue().getNum() + "\t");
+                    }
                     break;
                 }
 
@@ -290,6 +313,19 @@ public class main {
                     System.out.println("Employee Role is : "+role);
                     break;
                 }
+
+                case "10": {//employee role
+                    String day;
+                    int num=0;
+                    System.out.println("Insert day, then press Enter");
+                    day = scanner.nextLine().trim();
+                    System.out.println("Insert Shift number, then press Enter");
+                    try{num = Integer.parseInt(scanner.nextLine().trim());}
+                    catch (Exception e){System.out.println("Not a number");}
+                    Pair<String,Integer> p=dao.getShiftRequirement(day,num);
+                    System.out.println("Role :"+p.getKey() +"Amount: "+p.getValue());
+                    break;
+                }
                 default: {
                     System.out.println("Command Invalid:" );
                     break;
@@ -312,6 +348,7 @@ public class main {
                 "7 - Get Shift History \n" +
                 "8 - Insert Worker To Shift \n" +
                 "9 - Get Worker Role \n" +
+                "10 - Get Shift Requirements \n"+
                 "0 - Exit System"
         );
     }
