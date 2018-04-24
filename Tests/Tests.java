@@ -144,16 +144,20 @@ public class Tests {
     @org.junit.Test
     public void insertShiftRequirement() {
         _dao.insertShiftRequirement("friday",2,"cleaner",2);
-       Pair<String,Integer> p= _dao.getShiftRequirement("friday",2);
+       Vector<Pair<String,Integer>> l= _dao.getShiftRequirement("friday",2);
+        for (Pair<String,Integer> p:l) {
        assertEquals(p.getKey(),"cleaner");
        assertEquals(p.getValue().intValue(),2);
+        }
     }
 
     @org.junit.Test
     public void getShiftRequirement() {
         _dao.insertShiftRequirement("friday",2,"cleaner",2);
-        Pair<String,Integer> p= _dao.getShiftRequirement("friday",2);
-        assertEquals(p.getKey(),"cleaner");
-        assertEquals(p.getValue().intValue(),2);
+        Vector<Pair<String,Integer>> l= _dao.getShiftRequirement("friday",2);
+        for (Pair<String,Integer> p:l) {
+            assertEquals(p.getKey(),"cleaner");
+            assertEquals(p.getValue().intValue(),2);
+        }
     }
 }

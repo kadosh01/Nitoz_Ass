@@ -10,15 +10,15 @@ public class Employee {
     private int _bankAccount;
     private java.sql.Date _startDate;
     private String _conditions;
-    private String role;
-    private Vector<Constraints> list;
+    private String _role;
+    private Vector<Constraints> _constraints;
 
     public String getRole() {
-        return role;
+        return _role;
     }
 
     public void setRole(String role) {
-        this.role = role;
+        this._role = role;
     }
 
     public Employee(int _Id, String _firstName, String _lastName, int _bankAccount, java.sql.Date _startDate, String _conditions, String role) {
@@ -28,7 +28,7 @@ public class Employee {
         this._bankAccount = _bankAccount;
         this._startDate = _startDate;
         this._conditions = _conditions;
-        this.role = role;
+        this._role = role;
     }
 
 
@@ -92,13 +92,13 @@ public class Employee {
                 Objects.equals(_lastName, employee._lastName) &&
                 Objects.equals(_startDate, employee._startDate) &&
                 Objects.equals(_conditions, employee._conditions) &&
-                Objects.equals(role, employee.role) &&
-                Objects.equals(list, employee.list);
+                Objects.equals(_role, employee._role) &&
+                Objects.equals(_constraints, employee._constraints);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(_Id, _firstName, _lastName, _bankAccount, _startDate, _conditions, role, list);
+        return Objects.hash(_Id, _firstName, _lastName, _bankAccount, _startDate, _conditions, _role, _constraints);
     }
 }

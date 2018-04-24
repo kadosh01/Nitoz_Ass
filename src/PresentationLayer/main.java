@@ -322,8 +322,10 @@ public class main {
                     System.out.println("Insert Shift number, then press Enter");
                     try{num = Integer.parseInt(scanner.nextLine().trim());}
                     catch (Exception e){System.out.println("Not a number");}
-                    Pair<String,Integer> p=dao.getShiftRequirement(day,num);
-                    System.out.println("Role :"+p.getKey() +"Amount: "+p.getValue());
+                    Vector<Pair<String,Integer>> l=dao.getShiftRequirement(day,num);
+                    for (Pair<String,Integer> p:l) {
+                    System.out.println("Role :"+p.getKey() +" Amount: "+p.getValue());
+                    }
                     break;
                 }
                 default: {

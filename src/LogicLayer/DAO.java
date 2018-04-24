@@ -393,8 +393,8 @@ public class DAO {
         return "Requirement Succesfully Added";
     }
 
-    public Pair<String,Integer> getShiftRequirement(String day, int shift_num) {
-        Pair<String,Integer> p=null;
+    public Vector<Pair<String,Integer>> getShiftRequirement(String day, int shift_num) {
+        Vector<Pair<String,Integer>> p=new Vector<>();
         String sql = "SELECT * FROM Requirements "
                 + "WHERE shift_day = ? AND shift_of_day = ?";
 
@@ -413,7 +413,7 @@ public class DAO {
             }
             while(rs.next())
             {
-                p=new Pair<>(rs.getString("shift_requirement_role"),rs.getInt("amount"));
+                p.add(new Pair<>(rs.getString("shift_requirement_role"),rs.getInt("amount")));
             }
 
 
