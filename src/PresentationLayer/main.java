@@ -314,7 +314,7 @@ public class main {
                     break;
                 }
 
-                case "10": {//employee role
+                case "10": {//shift requirements
                     String day;
                     int num=0;
                     System.out.println("Insert day, then press Enter");
@@ -323,6 +323,7 @@ public class main {
                     try{num = Integer.parseInt(scanner.nextLine().trim());}
                     catch (Exception e){System.out.println("Not a number");}
                     Vector<Pair<String,Integer>> l=dao.getShiftRequirement(day,num);
+                    if(l==null) {System.out.println("Shist not exist");}
                     for (Pair<String,Integer> p:l) {
                     System.out.println("Role :"+p.getKey() +" Amount: "+p.getValue());
                     }

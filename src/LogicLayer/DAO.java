@@ -409,7 +409,7 @@ public class DAO {
             ResultSet rs =pstmt.executeQuery();
 
             if(!rs.isBeforeFirst()){
-                System.out.println("Employee doesn't exist");
+                System.out.println("shift doesn't exist");
                 return null;
             }
             while(rs.next())
