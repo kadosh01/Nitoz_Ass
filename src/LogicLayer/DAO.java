@@ -261,7 +261,7 @@ public class DAO {
 
     public String updateConstraints(Constraints c){
         String sql = "UPDATE Constraints SET start_time = ? , "
-                + "end_time = ? WHERE day_of_week = ?";
+                + "end_time = ? WHERE day_of_week = ? AND id = ?";
 
         try (Connection conn = db.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -270,6 +270,7 @@ public class DAO {
             pstmt.setTime(1, c.getStart_hour());
             pstmt.setTime(2, c.getEnd_hour());
             pstmt.setString(3, c.getDay());
+            pstmt.setInt(4, c.getId());
             // update
             pstmt.executeUpdate();
         } catch (SQLException e) {
