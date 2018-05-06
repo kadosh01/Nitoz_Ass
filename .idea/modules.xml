@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Nitoz_Ass.iml" filepath="$PROJECT_DIR$/Nitoz_Ass.iml" />
+      <module fileurl="file://$PROJECT_DIR$/out/artifacts/run_jar/Nitoz_Ass/Nitoz_Ass.iml" filepath="$PROJECT_DIR$/out/artifacts/run_jar/Nitoz_Ass/Nitoz_Ass.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Nitoz_Ass1.iml" filepath="$PROJECT_DIR$/Nitoz_Ass1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/out/artifacts/run_jar/run_jar.iml" filepath="$PROJECT_DIR$/out/artifacts/run_jar/run_jar.iml" />
     </modules>
   </component>
 </project>

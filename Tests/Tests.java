@@ -78,7 +78,7 @@ public class Tests {
         Constraints c=new Constraints(11111111,"saterday",java.sql.Time.valueOf("13:30:00"),java.sql.Time.valueOf("22:30:00"));
         _dao.insertNewConstraints(c);
         _dao.deleteConstraints(11111111,"saterday");
-        Vector<Constraints> l = _dao.getEmployeeConstraints(11111111);
+        Vector<Constraints> l = _dao.getEmployeeConstraints(11111111).get_constraints();
         if(l!=null && !l.isEmpty()) {
             for (Constraints e : l) {
                 if (e.equals(c)) {
@@ -95,7 +95,7 @@ public class Tests {
         _dao.insertNewConstraints(c);
         Constraints c1=new Constraints(11111111,"saterday",java.sql.Time.valueOf("10:30:00"),java.sql.Time.valueOf("22:30:00"));
         _dao.updateConstraints(c1);
-        Vector<Constraints> l = _dao.getEmployeeConstraints(11111111);
+        Vector<Constraints> l = _dao.getEmployeeConstraints(11111111).get_constraints();
         if(l!=null && !l.isEmpty()) {
             for (Constraints e : l) {
                 if (e.equals(c1)) {
@@ -112,7 +112,7 @@ public class Tests {
     public void insertNewConstraints() {
         Constraints c=new Constraints(11111111,"saterday",java.sql.Time.valueOf("13:30:00"),java.sql.Time.valueOf("10:30:00"));
         _dao.insertNewConstraints(c);
-        Vector<Constraints> l = _dao.getEmployeeConstraints(11111111);
+        Vector<Constraints> l = _dao.getEmployeeConstraints(11111111).get_constraints();
         if(l!=null && !l.isEmpty()) {
             for (Constraints e : l) {
                 if (e.equals(c)) {

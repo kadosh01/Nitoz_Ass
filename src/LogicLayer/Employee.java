@@ -11,6 +11,15 @@ public class Employee {
     private java.sql.Date _startDate;
     private String _conditions;
     private String _role;
+
+    public Vector<Constraints> get_constraints() {
+        return _constraints;
+    }
+
+    public void set_constraints(Vector<Constraints> _constraints) {
+        this._constraints = _constraints;
+    }
+
     private Vector<Constraints> _constraints;
 
     public String getRole() {
@@ -31,6 +40,10 @@ public class Employee {
         this._role = role;
     }
 
+    public Employee(int _Id,Vector<Constraints> constraints) {
+        this._Id = _Id;
+        _constraints=constraints;
+    }
 
 
     public int get_Id() {
@@ -100,5 +113,17 @@ public class Employee {
     public int hashCode() {
 
         return Objects.hash(_Id, _firstName, _lastName, _bankAccount, _startDate, _conditions, _role, _constraints);
+    }
+
+    public boolean checkAvailability(Shift shift){
+
+        for (Constraints cons: _constraints) {
+            if (cons.day == shift.getDay()){
+                if(shift.getNum()==1 && cons.start_hour.compareTo(java.sql.Time.valueOf("14:00:00"))<=0 ){return true;}
+                else if(shift.getNum()==2 && cons.start_hour.compareTo(java.sql.Time.valueOf("14:00:00"))>=0){return true;}
+            }
+
+        }
+        return false;
     }
 }

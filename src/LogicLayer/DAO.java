@@ -305,7 +305,7 @@ public class DAO {
         return "The Employee Constraint was successfully inserted";
     }
 
-    public Vector<Constraints> getEmployeeConstraints(int id) {
+    public Employee getEmployeeConstraints(int id) { /////////////////////////////
         Vector<Constraints> list=new Vector<>();
         String sql = "SELECT * from Constraints "
                 + "WHERE id = ?";
@@ -331,7 +331,9 @@ public class DAO {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return list;
+
+        Employee emp=new Employee(id,list);
+        return emp;
     }
 
     public String insertIntoShift(int id, Shift s) {

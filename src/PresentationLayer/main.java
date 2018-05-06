@@ -212,7 +212,7 @@ public class main {
                         System.out.println("Employee Id not in System");
                         break;
                     }
-                    Vector<Constraints> l=dao.getEmployeeConstraints(id);
+                    Vector<Constraints> l=dao.getEmployeeConstraints(id).get_constraints();
                     for (Constraints c:l) {
 
                         System.out.println(
@@ -294,7 +294,12 @@ public class main {
                         break;
                     }
                     shift_number = Integer.parseInt(shift);
-                    System.out.println(dao.insertIntoShift(id,new Shift(shift_number,date)));
+                    Shift shift1=new Shift(shift_number,date);
+                    Employee emp=dao.getEmployeeConstraints(id);
+                    if(emp.checkAvailability(shift1)) {
+                        System.out.println(dao.insertIntoShift(id, shift1));
+                    }
+                    else System.out.println("Employee not available fot this shift");
 
                 }
                 case "9": {//employee role
@@ -326,6 +331,8 @@ public class main {
                     }
                     break;
                 }
+                case "0" : inputString="0";
+                break;
                 default: {
                     System.out.println("Command Invalid:" );
                     break;
